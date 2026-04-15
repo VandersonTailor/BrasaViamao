@@ -7,6 +7,7 @@
   --accent-soft: #ffd8cc;
   --max: 1800px;
   --radius: 16px;
+  --container-padding: clamp(16px, 3vw, 42px);
 }
 
 * {
@@ -30,6 +31,7 @@ body {
   color: #161616;
   line-height: 1.5;
   text-align: left;
+  overflow-x: hidden;
 }
 
 h1,
@@ -59,9 +61,9 @@ a {
 }
 
 .container {
-  width: min(98.8vw, var(--max));
-  margin-left: 2.4vw;
-  margin-right: 0;
+  width: min(var(--max), calc(100% - (var(--container-padding) * 2)));
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero {
@@ -161,7 +163,7 @@ a {
 
 .hero-content {
   flex: 1;
-  padding: 0;
+  padding: clamp(24px, 5vh, 56px) 0;
   max-width: 1100px;
   position: relative;
   z-index: 2;
@@ -184,6 +186,7 @@ a {
   max-width: 62ch;
   font-size: 1.15rem;
   margin-inline: auto;
+  text-wrap: balance;
 }
 
 .hero-actions {
@@ -268,8 +271,8 @@ a {
 }
 
 #cultos {
-  min-height: 108vh;
-  min-height: 108svh;
+  min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   align-content: center;
 }
@@ -345,7 +348,7 @@ a {
 }
 
 .cult-info {
-  margin-left: 22px;
+  margin-left: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
@@ -372,7 +375,7 @@ a {
   border-radius: 22px;
   overflow: hidden;
   width: min(100%, 700px);
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   margin-inline: auto;
   background: transparent;
   box-shadow: none;
@@ -505,7 +508,7 @@ a {
   gap: 20px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 20px 24vw 28px;
+  padding: 20px 18vw 28px;
   scroll-snap-type: none;
   cursor: grab;
   user-select: none;
@@ -585,7 +588,7 @@ a {
 .church-showcase-content {
   order: 1;
   max-width: 760px;
-  padding: 16px 0 54px;
+  padding: 16px 0 34px;
 }
 
 .church-showcase-content h2 {
@@ -609,7 +612,7 @@ a {
 .footer {
   background: var(--bg-soft);
   color: #eceae5;
-  padding: 86px 0;
+  padding: clamp(54px, 8vw, 86px) 0;
 }
 
 .footer-grid {
@@ -626,6 +629,7 @@ a {
   color: #d5d3ce;
   display: block;
   margin-bottom: 13px;
+  overflow-wrap: anywhere;
 }
 
 .reveal {
@@ -659,6 +663,7 @@ a {
 
   .cult-layout {
     grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .church-showcase-layout {
@@ -670,8 +675,17 @@ a {
     flex-basis: min(84vw, 300px);
   }
 
+  .chips a {
+    width: 100%;
+  }
+
+  .cult-video {
+    width: min(100%, 560px);
+    aspect-ratio: 4 / 5;
+  }
+
   .cult-video video {
-    max-height: 62vh;
+    max-height: 65vh;
   }
 
   .nav {
@@ -691,5 +705,149 @@ a {
 
   .hero-content {
     align-content: center;
+  }
+}
+
+@media (max-width: 1200px) {
+  .nav-links {
+    gap: 14px;
+  }
+
+  .hero-content {
+    max-width: 920px;
+  }
+}
+
+@media (max-width: 992px) {
+  html {
+    scroll-padding-top: 82px;
+  }
+
+  .section {
+    padding: clamp(50px, 7vw, 74px) 0;
+  }
+
+  .intro {
+    padding: clamp(56px, 8vw, 88px) 0;
+  }
+
+  .social-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 16px;
+  }
+
+  h1 {
+    letter-spacing: -0.4px;
+  }
+
+  .brand {
+    font-size: clamp(1.1rem, 6vw, 1.45rem);
+  }
+
+  .nav {
+    padding-top: 14px;
+    gap: 12px;
+  }
+
+  .nav-links {
+    justify-content: center;
+    gap: 10px 14px;
+  }
+
+  .nav-links a {
+    font-size: 0.95rem;
+  }
+
+  .hero-content {
+    padding: 28px 0 44px;
+  }
+
+  .lead {
+    font-size: 1.02rem;
+  }
+
+  .card,
+  .section-social .card,
+  .ministry-item {
+    padding: 20px;
+  }
+
+  .church-gallery {
+    padding: 14px 13vw 22px;
+    gap: 14px;
+  }
+
+  .church-gallery-wrap {
+    padding-top: 24px;
+  }
+
+  .church-showcase-content p,
+  .intro p {
+    font-size: 1rem;
+  }
+
+  .social-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  html {
+    scroll-padding-top: 74px;
+  }
+
+  .hero-content {
+    padding: 20px 0 34px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .rotating-word {
+    min-width: 8ch;
+  }
+
+  .polaroid-card {
+    flex-basis: 78vw;
+    padding: 8px 8px 12px;
+  }
+
+  .social-video-card video {
+    aspect-ratio: 4 / 3;
+  }
+
+  .section-text {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-links a {
+    font-size: 0.88rem;
+  }
+
+  .brand span {
+    line-height: 1.1;
+  }
+
+  .intro h2,
+  .church-showcase-content h2 {
+    word-break: break-word;
+  }
+
+  .chips a {
+    font-size: 0.9rem;
+    padding: 9px 12px;
   }
 }
