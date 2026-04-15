@@ -898,8 +898,11 @@ a {
   }
 
   .church-gallery-wrap {
-    padding-top: 24px;
-    height: clamp(430px, 98vw, 560px);
+    padding-top: 28px;
+    padding-bottom: 28px;
+    height: auto;
+    min-height: 0;
+    overflow-y: visible;
   }
 
   .church-showcase-content p,
@@ -936,10 +939,6 @@ a {
 
   .rotating-word {
     min-width: 8ch;
-  }
-
-  .church-gallery-wrap {
-    height: clamp(420px, 110vw, 540px);
   }
 
   .polaroid-card {
