@@ -23,6 +23,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    this.initVideoPlayback();
     this.initHeroTyping();
     this.initRotatingWord();
     this.initChurchGallery();
@@ -84,6 +85,40 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     heroObserver.observe(hero);
     this.teardownFns.push(() => heroObserver.disconnect());
+  }
+
+  private initVideoPlayback(): void {
+    const videos = Array.from(this.host.querySelectorAll<HTMLVideoElement>('video'));
+    if (!videos.length) return;
+
+    const playSilently = (video: HTMLVideoElement) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.volume = 0;
+      video.setAttribute('muted', '');
+      void video.play().catch(() => {
+        // Ignore autoplay errors until user interaction.
+      });
+    };
+
+    videos.forEach((video) => {
+      playSilently(video);
+      const onCanPlay = () => playSilently(video);
+      video.addEventListener('canplay', onCanPlay);
+      this.teardownFns.push(() => video.removeEventListener('canplay', onCanPlay));
+    });
+
+    const tryPlayAll = () => videos.forEach((video) => playSilently(video));
+    const onUserGesture = () => tryPlayAll();
+    window.addEventListener('click', onUserGesture, { passive: true });
+    window.addEventListener('touchstart', onUserGesture, { passive: true });
+    document.addEventListener('visibilitychange', onUserGesture);
+
+    this.teardownFns.push(() => {
+      window.removeEventListener('click', onUserGesture);
+      window.removeEventListener('touchstart', onUserGesture);
+      document.removeEventListener('visibilitychange', onUserGesture);
+    });
   }
 
   private initRotatingWord(): void {
