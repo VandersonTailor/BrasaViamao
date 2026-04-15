@@ -326,6 +326,18 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       rafId = window.requestAnimationFrame(syncActiveFromCenter);
     };
 
+    const centerCardInViewport = (card: HTMLElement | null) => {
+      if (!card) return;
+      const targetLeft = card.offsetLeft + card.offsetWidth / 2 - gallery.clientWidth / 2;
+      gallery.scrollLeft = targetLeft;
+      scheduleSync();
+    };
+
+    const recenterActiveCard = () => {
+      const cardToCenter = activeCard ?? getCenterCard();
+      centerCardInViewport(cardToCenter);
+    };
+
     const onClick = (event: Event) => {
       const target = event.target as HTMLElement | null;
       const card = target?.closest('.polaroid-card') as HTMLElement | null;
@@ -379,6 +391,22 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       syncActiveFromCenter();
     });
 
+    const hashHandler = () => {
+      if (window.location.hash === '#nossa-igreja') {
+        window.setTimeout(recenterActiveCard, 150);
+        window.setTimeout(recenterActiveCard, 980);
+      }
+    };
+
+    const igrejaLinks = Array.from(this.host.querySelectorAll<HTMLAnchorElement>('a[href="#nossa-igreja"]'));
+    const igrejaLinkHandler = () => {
+      window.setTimeout(recenterActiveCard, 180);
+      window.setTimeout(recenterActiveCard, 980);
+    };
+
+    igrejaLinks.forEach((link) => link.addEventListener('click', igrejaLinkHandler));
+    window.addEventListener('hashchange', hashHandler);
+
     this.teardownFns.push(() => {
       window.cancelAnimationFrame(rafId);
       window.cancelAnimationFrame(startId);
@@ -389,6 +417,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       gallery.removeEventListener('pointerup', stopDrag);
       gallery.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', scheduleSync);
+      window.removeEventListener('hashchange', hashHandler);
+      igrejaLinks.forEach((link) => link.removeEventListener('click', igrejaLinkHandler));
     });
   }
 
@@ -423,7 +453,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         const target = this.host.querySelector<HTMLElement>(href);
         if (!target) return;
         event.preventDefault();
-        const offset = 88;
+        const offset = 0;
         const targetY = target.getBoundingClientRect().top + window.scrollY - offset;
         if (prefersReduced) {
           window.scrollTo(0, targetY);
