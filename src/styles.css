@@ -226,6 +226,25 @@ a {
 
 .intro {
   padding: clamp(72px, 10vw, 120px) 0;
+  margin-bottom: clamp(22px, 4vw, 58px);
+  position: relative;
+  z-index: 1;
+}
+
+.intro::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(clamp(22px, 4vw, 58px) * -1);
+  height: clamp(70px, 11vw, 126px);
+  background: linear-gradient(
+    180deg,
+    rgba(245, 244, 241, 0) 0%,
+    rgba(245, 244, 241, 0.72) 45%,
+    rgba(231, 231, 231, 0.96) 100%
+  );
+  pointer-events: none;
 }
 
 .intro h2 {
@@ -278,7 +297,7 @@ a {
 }
 
 .section-accent {
-  background: linear-gradient(180deg, #c2c2c2, #a8a8a8);
+  background: linear-gradient(180deg, #eceaea, #e4e2e2);
 }
 
 .section-social {
@@ -288,6 +307,26 @@ a {
 
 .section-social .section-text {
   color: #3a3a3a;
+}
+
+.social-message {
+  margin-top: 18px;
+  margin-bottom: 22px;
+  padding: 18px 20px;
+  background: #f7f1ea;
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+}
+
+.social-verse {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: #2a2a2a;
+}
+
+.social-explanation {
+  margin: 0;
+  color: #3b3b3b;
 }
 
 .section-text {
@@ -463,25 +502,53 @@ a {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .social-video-card video {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 13;
+  aspect-ratio: 16 / 10;
   margin-inline: auto;
   border-radius: 16px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
   object-fit: cover;
   object-position: center;
+  max-height: 290px;
 }
 
 .church-showcase {
-  background: linear-gradient(180deg, #f7f7f7, #ececec);
+  background: linear-gradient(180deg, #dddcdc, #d1d1d1);
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
   align-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.church-showcase::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(72px, 12vw, 130px);
+  background: linear-gradient(
+    180deg,
+    #ededed 0%,
+    rgba(237, 237, 237, 0.78) 45%,
+    rgba(237, 237, 237, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.church-showcase > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .church-showcase-layout {
@@ -489,6 +556,7 @@ a {
   grid-template-columns: 1fr;
   gap: 20px;
   align-items: start;
+  min-height: clamp(720px, 92vh, 980px);
 }
 
 .church-gallery-wrap {
@@ -497,10 +565,11 @@ a {
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: hidden;
   position: relative;
   padding-top: 52px;
   padding-bottom: 18px;
+  height: clamp(380px, 50vw, 560px);
 }
 
 .church-gallery {
@@ -527,20 +596,19 @@ a {
 
 .polaroid-card {
   flex: 0 0 clamp(220px, 24vw, 320px);
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border: 1px solid #d7d7d7;
   border-radius: 14px;
   padding: 10px 10px 14px;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
   scroll-snap-align: center;
-  transform: translateY(calc(var(--wheel-y, 0px) + var(--active-raise, 0px)))
-    rotate(var(--wheel-rotate, 0deg))
-    scale(calc(1 + var(--wheel-scale, 0) + var(--active-scale, 0)));
+  transform: translateY(var(--active-raise, 0px))
+    scale(calc(1 + var(--active-scale, 0)));
   transition: transform 0.38s cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 0.34s ease,
-    border-color 0.34s ease,
-    opacity 0.34s ease;
-  opacity: 0.88;
+    border-color 0.34s ease;
 }
 
 .polaroid-card:hover {
@@ -576,19 +644,25 @@ a {
 }
 
 .polaroid-card span {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.8em;
   margin-top: 10px;
   font-family: "Josefin Sans", sans-serif;
   font-size: 1.05rem;
+  line-height: 1.2;
   font-weight: 700;
   color: #272727;
   text-align: center;
+  overflow: hidden;
 }
 
 .church-showcase-content {
   order: 1;
   max-width: 760px;
   padding: 16px 0 34px;
+  min-height: 340px;
 }
 
 .church-showcase-content h2 {
@@ -607,6 +681,23 @@ a {
 .showcase-lesson,
 .showcase-heart {
   max-width: 64ch;
+}
+
+#showcase-title {
+  min-height: 1.25em;
+}
+
+#showcase-verse {
+  height: 2.8em;
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+#showcase-lesson,
+#showcase-heart {
+  height: 3em;
+  line-height: 1.4;
+  overflow: hidden;
 }
 
 .footer {
@@ -630,6 +721,29 @@ a {
   display: block;
   margin-bottom: 13px;
   overflow-wrap: anywhere;
+}
+
+.footer-map {
+  margin-top: 14px;
+  width: min(100%, 460px);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.footer-map iframe {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border: 0;
+  display: block;
+}
+
+.map-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: underline;
 }
 
 .reveal {
@@ -669,6 +783,7 @@ a {
   .church-showcase-layout {
     grid-template-columns: 1fr;
     gap: 18px;
+    min-height: auto;
   }
 
   .polaroid-card {
@@ -784,6 +899,7 @@ a {
 
   .church-gallery-wrap {
     padding-top: 24px;
+    height: clamp(330px, 88vw, 470px);
   }
 
   .church-showcase-content p,
@@ -797,6 +913,10 @@ a {
 
   .footer-grid {
     gap: 20px;
+  }
+
+  .footer-map {
+    width: 100%;
   }
 }
 
@@ -823,8 +943,13 @@ a {
     padding: 8px 8px 12px;
   }
 
+  .polaroid-card span {
+    height: 3.1em;
+  }
+
   .social-video-card video {
     aspect-ratio: 4 / 3;
+    max-height: 240px;
   }
 
   .section-text {

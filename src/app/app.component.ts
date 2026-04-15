@@ -191,6 +191,18 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         verse: '"Quem crer e for batizado será salvo." (Marcos 16:16)',
         lesson: 'Lição: o batismo é um passo de fé, obediência e nova vida em Cristo.',
         heart: 'Celebramos juntos cada vida transformada pelo amor de Jesus.'
+      },
+      santaceia: {
+        title: 'Culto de Santa Ceia',
+        verse: '"Fazei isto em memória de mim." (Lucas 22:19)',
+        lesson: 'Lição: lembramos do sacrifício de Cristo e renovamos nossa aliança com Ele.',
+        heart: 'Um momento de unidade, gratidão e reverência diante de Deus.'
+      },
+      homens: {
+        title: 'Culto de Homens',
+        verse: '"Sede fortes e corajosos." (1 Coríntios 16:13)',
+        lesson: 'Lição: homens firmados na Palavra fortalecem suas casas, sua fé e seu chamado.',
+        heart: 'Um ambiente de comunhão, crescimento e compromisso com Cristo.'
       }
     };
 
@@ -199,7 +211,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     let startX = 0;
     let startScroll = 0;
     let rafId = 0;
-    let isAdjustingLoop = false;
+    let isWrapping = false;
+    let activePointerId: number | null = null;
     const seedCount = seedCards.length;
 
     const cloneBlock = (cards: HTMLElement[]) => cards.map((card) => {
@@ -208,12 +221,17 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       return clone;
     });
 
-    const before = cloneBlock(seedCards);
-    const after = cloneBlock(seedCards);
-    before.forEach((card) => gallery.insertBefore(card, gallery.firstChild));
-    after.forEach((card) => gallery.appendChild(card));
+    const beforeFar = cloneBlock(seedCards);
+    const beforeNear = cloneBlock(seedCards);
+    const afterNear = cloneBlock(seedCards);
+    const afterFar = cloneBlock(seedCards);
+    beforeFar.forEach((card) => gallery.insertBefore(card, gallery.firstChild));
+    beforeNear.forEach((card) => gallery.insertBefore(card, gallery.firstChild));
+    afterNear.forEach((card) => gallery.appendChild(card));
+    afterFar.forEach((card) => gallery.appendChild(card));
 
-    let cards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
+    const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
+    const middleStartIndex = seedCount * 2;
 
     const render = (key: string) => {
       const item = content[key];
@@ -229,25 +247,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       activeCard = card;
       cards.forEach((node) => node.classList.toggle('is-active', node === activeCard));
       render(card.dataset['showcase'] ?? '');
-    };
-
-    const updateWheelVisuals = () => {
-      const centerX = gallery.scrollLeft + gallery.clientWidth / 2;
-      const radius = gallery.clientWidth * 0.58;
-      cards.forEach((card) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const distance = cardCenter - centerX;
-        const normalized = Math.max(-1, Math.min(1, distance / radius));
-        const abs = Math.abs(normalized);
-        const rotate = normalized * 20;
-        const y = abs * 52;
-        const scale = 0.02 - abs * 0.08;
-        const opacity = 1 - abs * 0.45;
-        card.style.setProperty('--wheel-rotate', `${rotate}deg`);
-        card.style.setProperty('--wheel-y', `${y}px`);
-        card.style.setProperty('--wheel-scale', `${scale}`);
-        card.style.opacity = `${Math.max(0.5, opacity)}`;
-      });
     };
 
     const centerDistance = (card: HTMLElement | null) => {
@@ -272,36 +271,42 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       return best;
     };
 
-    const blockWidth = () => {
-      if (cards.length < seedCount + 1) return 0;
-      return cards[seedCount].offsetLeft - cards[0].offsetLeft;
+    const segmentWidth = () => {
+      if (cards.length < middleStartIndex + seedCount + 1) return 0;
+      return cards[middleStartIndex + seedCount].offsetLeft - cards[middleStartIndex].offsetLeft;
     };
 
-    const keepInfiniteLoop = () => {
-      if (isAdjustingLoop) return;
-      const width = blockWidth();
+    const wrapScrollPosition = () => {
+      if (isWrapping) return;
+      const width = segmentWidth();
       if (!width) return;
-      const middleStart = cards[seedCount].offsetLeft;
-      const minEdge = middleStart - width * 0.5;
-      const maxEdge = middleStart + width * 0.5;
-      const current = gallery.scrollLeft;
-      let adjusted = current;
 
-      if (current < minEdge) {
-        adjusted = current + width;
-      } else if (current > maxEdge) {
-        adjusted = current - width;
+      const middleStart = cards[middleStartIndex].offsetLeft;
+      const minSafe = middleStart - width * 0.35;
+      const maxSafe = middleStart + width * 1.35;
+      let next = gallery.scrollLeft;
+      let delta = 0;
+
+      if (next < minSafe) {
+        delta = width;
+        next += width;
+      } else if (next > maxSafe) {
+        delta = -width;
+        next -= width;
       }
 
-      if (adjusted !== current) {
-        isAdjustingLoop = true;
-        gallery.scrollLeft = adjusted;
-        isAdjustingLoop = false;
+      if (next !== gallery.scrollLeft) {
+        isWrapping = true;
+        gallery.scrollLeft = next;
+        if (isDown) {
+          startScroll += delta;
+        }
+        isWrapping = false;
       }
     };
 
     const syncActiveFromCenter = () => {
-      keepInfiniteLoop();
+      wrapScrollPosition();
       const candidate = getCenterCard();
       if (!activeCard) {
         setActiveCard(candidate);
@@ -312,7 +317,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           setActiveCard(candidate);
         }
       }
-      updateWheelVisuals();
     };
 
     const scheduleSync = () => {
@@ -338,12 +342,17 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       gallery.classList.add('is-dragging');
       startX = event.clientX;
       startScroll = gallery.scrollLeft;
+      activePointerId = event.pointerId;
       gallery.setPointerCapture(event.pointerId);
     };
 
     const stopDrag = () => {
       isDown = false;
       gallery.classList.remove('is-dragging');
+      if (activePointerId !== null && gallery.hasPointerCapture(activePointerId)) {
+        gallery.releasePointerCapture(activePointerId);
+      }
+      activePointerId = null;
       scheduleSync();
     };
 
@@ -364,8 +373,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     window.addEventListener('resize', scheduleSync);
 
     const startId = window.requestAnimationFrame(() => {
-      cards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
-      gallery.scrollLeft = cards[seedCount].offsetLeft;
+      if (cards.length > middleStartIndex) {
+        gallery.scrollLeft = cards[middleStartIndex].offsetLeft;
+      }
       syncActiveFromCenter();
     });
 
