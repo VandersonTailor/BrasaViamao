@@ -96,16 +96,30 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       video.defaultMuted = true;
       video.volume = 0;
       video.setAttribute('muted', '');
+      video.autoplay = true;
+      video.loop = true;
+      video.playsInline = true;
       void video.play().catch(() => {
-        // Ignore autoplay errors until user interaction.
+        // Autoplay may be blocked; fallback handlers below retry after interaction.
       });
     };
 
     videos.forEach((video) => {
       playSilently(video);
       const onCanPlay = () => playSilently(video);
+      const onLoadedMeta = () => playSilently(video);
+      const onMouseEnter = () => playSilently(video);
+      const onTouchStart = () => playSilently(video);
+
       video.addEventListener('canplay', onCanPlay);
+      video.addEventListener('loadedmetadata', onLoadedMeta);
+      video.addEventListener('mouseenter', onMouseEnter, { passive: true });
+      video.addEventListener('touchstart', onTouchStart, { passive: true });
+
       this.teardownFns.push(() => video.removeEventListener('canplay', onCanPlay));
+      this.teardownFns.push(() => video.removeEventListener('loadedmetadata', onLoadedMeta));
+      this.teardownFns.push(() => video.removeEventListener('mouseenter', onMouseEnter));
+      this.teardownFns.push(() => video.removeEventListener('touchstart', onTouchStart));
     });
 
     const tryPlayAll = () => videos.forEach((video) => playSilently(video));
