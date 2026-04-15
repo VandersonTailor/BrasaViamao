@@ -569,7 +569,7 @@ a {
   position: relative;
   padding-top: 52px;
   padding-bottom: 18px;
-  height: clamp(380px, 50vw, 560px);
+  height: clamp(420px, 56vw, 620px);
 }
 
 .church-gallery {
@@ -899,7 +899,7 @@ a {
 
   .church-gallery-wrap {
     padding-top: 24px;
-    height: clamp(330px, 88vw, 470px);
+    height: clamp(430px, 98vw, 560px);
   }
 
   .church-showcase-content p,
@@ -936,6 +936,10 @@ a {
 
   .rotating-word {
     min-width: 8ch;
+  }
+
+  .church-gallery-wrap {
+    height: clamp(420px, 110vw, 540px);
   }
 
   .polaroid-card {
