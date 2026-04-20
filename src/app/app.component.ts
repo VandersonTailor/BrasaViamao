@@ -159,8 +159,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     const gallery = this.host.querySelector<HTMLElement>('#church-gallery');
     if (!gallery) return;
 
-    const seedCards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
-    if (!seedCards.length) return;
+    const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
+    if (!cards.length) return;
 
     const titleEl = this.host.querySelector<HTMLElement>('#showcase-title');
     const verseEl = this.host.querySelector<HTMLElement>('#showcase-verse');
@@ -206,219 +206,47 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       }
     };
 
-    let activeCard: HTMLElement | null = null;
-    let isDown = false;
-    let startX = 0;
-    let startScroll = 0;
-    let rafId = 0;
-    let isWrapping = false;
-    let activePointerId: number | null = null;
-    const seedCount = seedCards.length;
-
-    const cloneBlock = (cards: HTMLElement[]) => cards.map((card) => {
-      const clone = card.cloneNode(true) as HTMLElement;
-      clone.classList.remove('is-active');
-      return clone;
-    });
-
-    const beforeFar = cloneBlock(seedCards);
-    const beforeNear = cloneBlock(seedCards);
-    const afterNear = cloneBlock(seedCards);
-    const afterFar = cloneBlock(seedCards);
-    beforeFar.forEach((card) => gallery.insertBefore(card, gallery.firstChild));
-    beforeNear.forEach((card) => gallery.insertBefore(card, gallery.firstChild));
-    afterNear.forEach((card) => gallery.appendChild(card));
-    afterFar.forEach((card) => gallery.appendChild(card));
-
-    const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.polaroid-card'));
-    const middleStartIndex = seedCount * 2;
-
-    const render = (key: string) => {
+    const render = (card: HTMLElement) => {
+      const key = card.dataset['showcase'] ?? '';
       const item = content[key];
       if (!item || !titleEl || !verseEl || !lessonEl || !heartEl) return;
+
       titleEl.textContent = item.title;
       verseEl.textContent = item.verse;
       lessonEl.textContent = item.lesson;
       heartEl.textContent = item.heart;
     };
 
-    const setActiveCard = (card: HTMLElement | null) => {
-      if (!card || activeCard === card) return;
-      activeCard = card;
-      cards.forEach((node) => node.classList.toggle('is-active', node === activeCard));
-      render(card.dataset['showcase'] ?? '');
-    };
-
-    const centerDistance = (card: HTMLElement | null) => {
-      if (!card) return Number.POSITIVE_INFINITY;
-      const centerX = gallery.scrollLeft + gallery.clientWidth / 2;
-      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-      return Math.abs(cardCenter - centerX);
-    };
-
-    const getCenterCard = () => {
-      const centerX = gallery.scrollLeft + gallery.clientWidth / 2;
-      let best: HTMLElement | null = null;
-      let bestDistance = Number.POSITIVE_INFINITY;
-      cards.forEach((card) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const distance = Math.abs(cardCenter - centerX);
-        if (distance < bestDistance) {
-          best = card;
-          bestDistance = distance;
-        }
-      });
-      return best;
-    };
-
-    const segmentWidth = () => {
-      if (cards.length < middleStartIndex + seedCount + 1) return 0;
-      return cards[middleStartIndex + seedCount].offsetLeft - cards[middleStartIndex].offsetLeft;
-    };
-
-    const wrapScrollPosition = () => {
-      if (isWrapping) return;
-      const width = segmentWidth();
-      if (!width) return;
-
-      const middleStart = cards[middleStartIndex].offsetLeft;
-      const minSafe = middleStart - width * 0.35;
-      const maxSafe = middleStart + width * 1.35;
-      let next = gallery.scrollLeft;
-      let delta = 0;
-
-      if (next < minSafe) {
-        delta = width;
-        next += width;
-      } else if (next > maxSafe) {
-        delta = -width;
-        next -= width;
-      }
-
-      if (next !== gallery.scrollLeft) {
-        isWrapping = true;
-        gallery.scrollLeft = next;
-        if (isDown) {
-          startScroll += delta;
-        }
-        isWrapping = false;
-      }
-    };
-
-    const syncActiveFromCenter = () => {
-      wrapScrollPosition();
-      const candidate = getCenterCard();
-      if (!activeCard) {
-        setActiveCard(candidate);
-      } else if (candidate && candidate !== activeCard) {
-        const currentDist = centerDistance(activeCard);
-        const nextDist = centerDistance(candidate);
-        if (nextDist + 16 < currentDist) {
-          setActiveCard(candidate);
-        }
-      }
-    };
-
-    const scheduleSync = () => {
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
-      }
-      rafId = window.requestAnimationFrame(syncActiveFromCenter);
-    };
-
-    const centerCardInViewport = (card: HTMLElement | null) => {
-      if (!card) return;
-      const targetLeft = card.offsetLeft + card.offsetWidth / 2 - gallery.clientWidth / 2;
-      gallery.scrollLeft = targetLeft;
-      scheduleSync();
-    };
-
-    const recenterActiveCard = () => {
-      const cardToCenter = activeCard ?? getCenterCard();
-      centerCardInViewport(cardToCenter);
+    const setActiveCard = (card: HTMLElement) => {
+      cards.forEach((node) => node.classList.toggle('is-active', node === card));
+      render(card);
     };
 
     const onClick = (event: Event) => {
       const target = event.target as HTMLElement | null;
       const card = target?.closest('.polaroid-card') as HTMLElement | null;
       if (!card) return;
-      const targetLeft = card.offsetLeft + card.offsetWidth / 2 - gallery.clientWidth / 2;
-      gallery.scrollLeft = targetLeft;
-      scheduleSync();
+      setActiveCard(card);
     };
 
-    const onScroll = () => scheduleSync();
-
-    const onPointerDown = (event: PointerEvent) => {
-      isDown = true;
-      gallery.classList.add('is-dragging');
-      startX = event.clientX;
-      startScroll = gallery.scrollLeft;
-      activePointerId = event.pointerId;
-      gallery.setPointerCapture(event.pointerId);
-    };
-
-    const stopDrag = () => {
-      isDown = false;
-      gallery.classList.remove('is-dragging');
-      if (activePointerId !== null && gallery.hasPointerCapture(activePointerId)) {
-        gallery.releasePointerCapture(activePointerId);
-      }
-      activePointerId = null;
-      scheduleSync();
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      if (!isDown) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const target = event.target as HTMLElement | null;
+      const card = target?.closest('.polaroid-card') as HTMLElement | null;
+      if (!card) return;
       event.preventDefault();
-      const walk = (event.clientX - startX) * 0.78;
-      gallery.scrollLeft = startScroll - walk;
-      scheduleSync();
+      setActiveCard(card);
     };
 
     gallery.addEventListener('click', onClick);
-    gallery.addEventListener('scroll', onScroll, { passive: true });
-    gallery.addEventListener('pointerdown', onPointerDown);
-    gallery.addEventListener('pointerleave', stopDrag);
-    gallery.addEventListener('pointerup', stopDrag);
-    gallery.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('resize', scheduleSync);
+    gallery.addEventListener('keydown', onKeyDown);
 
-    const startId = window.requestAnimationFrame(() => {
-      if (cards.length > middleStartIndex) {
-        gallery.scrollLeft = cards[middleStartIndex].offsetLeft;
-      }
-      syncActiveFromCenter();
-    });
-
-    const hashHandler = () => {
-      if (window.location.hash === '#nossa-igreja') {
-        window.setTimeout(recenterActiveCard, 150);
-        window.setTimeout(recenterActiveCard, 980);
-      }
-    };
-
-    const igrejaLinks = Array.from(this.host.querySelectorAll<HTMLAnchorElement>('a[href="#nossa-igreja"]'));
-    const igrejaLinkHandler = () => {
-      window.setTimeout(recenterActiveCard, 180);
-      window.setTimeout(recenterActiveCard, 980);
-    };
-
-    igrejaLinks.forEach((link) => link.addEventListener('click', igrejaLinkHandler));
-    window.addEventListener('hashchange', hashHandler);
+    const initial = cards.find((card) => card.classList.contains('is-active')) ?? cards[0];
+    setActiveCard(initial);
 
     this.teardownFns.push(() => {
-      window.cancelAnimationFrame(rafId);
-      window.cancelAnimationFrame(startId);
       gallery.removeEventListener('click', onClick);
-      gallery.removeEventListener('scroll', onScroll);
-      gallery.removeEventListener('pointerdown', onPointerDown);
-      gallery.removeEventListener('pointerleave', stopDrag);
-      gallery.removeEventListener('pointerup', stopDrag);
-      gallery.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('resize', scheduleSync);
-      window.removeEventListener('hashchange', hashHandler);
-      igrejaLinks.forEach((link) => link.removeEventListener('click', igrejaLinkHandler));
+      gallery.removeEventListener('keydown', onKeyDown);
     });
   }
 
@@ -469,7 +297,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     const revealTargets = Array.from(
       this.host.querySelectorAll<HTMLElement>(
-        '.intro h2, .intro p, .intro .card, .cult-info, .cult-video, .church-showcase-content > *, .social-video-card, .section-social .card, .ministry-item, .footer-grid > div'
+        '.intro h2, .intro p, .intro .card, .intro .first-visit-btn, .cult-info, .cult-video, .church-showcase-content > *, .church-gallery .polaroid-card, .social-video-card, .section-social .card, .ministry-item, .footer-grid > div'
       )
     );
 

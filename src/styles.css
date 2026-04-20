@@ -226,7 +226,7 @@ a {
 
 .intro {
   padding: clamp(72px, 10vw, 120px) 0;
-  margin-bottom: clamp(22px, 4vw, 58px);
+  margin-bottom: clamp(44px, 7vw, 92px);
   position: relative;
   z-index: 1;
 }
@@ -236,8 +236,8 @@ a {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(clamp(22px, 4vw, 58px) * -1);
-  height: clamp(70px, 11vw, 126px);
+  bottom: calc(clamp(44px, 7vw, 92px) * -1);
+  height: clamp(92px, 13vw, 156px);
   background: linear-gradient(
     180deg,
     rgba(245, 244, 241, 0) 0%,
@@ -257,11 +257,27 @@ a {
   word-spacing: 0.1em;
 }
 
+.first-visit-copy {
+  background: linear-gradient(155deg, #ffffff 0%, #fff3ed 100%);
+  border-radius: 20px;
+  padding: clamp(20px, 2.4vw, 32px);
+  box-shadow: 0 12px 26px rgba(165, 83, 47, 0.11);
+}
+
+.first-visit-copy h2 {
+  font-size: clamp(1.6rem, 2.8vw, 2.35rem);
+}
+
+.first-visit-copy p {
+  font-size: clamp(1rem, 1.15vw, 1.08rem);
+  line-height: 1.56;
+}
+
 .rotating-word {
   display: inline-block;
   min-width: 11ch;
   font-weight: 800;
-  font-size: 1.12em;
+  font-size: 1.55em;
   color: #b43d15;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
@@ -352,6 +368,23 @@ a {
 .card:focus-within {
   transform: translateY(-6px);
   box-shadow: 0 16px 34px rgba(24, 24, 24, 0.16);
+}
+
+.first-visit-card {
+  padding: clamp(24px, 2.4vw, 34px);
+  border: 1px solid #efc2af;
+  background: linear-gradient(160deg, #fffaf7 0%, #fff1ea 100%);
+  box-shadow: 0 16px 34px rgba(155, 73, 40, 0.2);
+}
+
+.first-visit-card h3 {
+  font-size: clamp(1.4rem, 2.1vw, 1.9rem);
+  margin-bottom: 12px;
+}
+
+.first-visit-card p {
+  font-size: clamp(1rem, 1.2vw, 1.08rem);
+  line-height: 1.56;
 }
 
 .chips {
@@ -521,10 +554,8 @@ a {
 
 .church-showcase {
   background: linear-gradient(180deg, #dddcdc, #d1d1d1);
-  min-height: 100vh;
-  min-height: 100svh;
   display: grid;
-  align-content: center;
+  align-content: start;
   position: relative;
   overflow: hidden;
 }
@@ -553,104 +584,88 @@ a {
 
 .church-showcase-layout {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-  align-items: start;
-  min-height: clamp(720px, 92vh, 980px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(18px, 2.4vw, 36px);
+  align-items: center;
 }
 
 .church-gallery-wrap {
-  order: 2;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  overflow-x: hidden;
-  overflow-y: hidden;
-  position: relative;
-  padding-top: 52px;
-  padding-bottom: 18px;
-  height: clamp(420px, 56vw, 620px);
+  order: 1;
+  width: 100%;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  align-content: start;
 }
 
 .church-gallery {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 20px 18vw 28px;
-  scroll-snap-type: none;
-  cursor: grab;
-  user-select: none;
-  touch-action: pan-x;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.church-gallery.is-dragging {
-  cursor: grabbing;
-}
-
-.church-gallery::-webkit-scrollbar {
-  display: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .polaroid-card {
-  flex: 0 0 clamp(220px, 24vw, 320px);
   display: flex;
   flex-direction: column;
   background: #ffffff;
-  border: 1px solid #d7d7d7;
-  border-radius: 14px;
-  padding: 10px 10px 14px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
-  scroll-snap-align: center;
-  transform: translateY(var(--active-raise, 0px))
-    scale(calc(1 + var(--active-scale, 0)));
-  transition: transform 0.38s cubic-bezier(0.22, 0.61, 0.36, 1),
-    box-shadow 0.34s ease,
-    border-color 0.34s ease;
+  border: 1px solid #d5d4d4;
+  border-radius: 12px;
+  padding: 6px 6px 8px;
+  box-shadow: 0 6px 14px rgba(18, 18, 18, 0.09);
+  opacity: 0.56;
+  transform: scale(0.96);
+  transition: transform 0.24s ease,
+    box-shadow 0.24s ease,
+    border-color 0.24s ease,
+    background-color 0.24s ease,
+    opacity 0.24s ease;
 }
 
 .polaroid-card:hover {
-  --active-raise: -10px;
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+  transform: scale(0.985);
+  box-shadow: 0 12px 20px rgba(20, 20, 20, 0.14);
+  opacity: 0.88;
 }
 
 .polaroid-card.is-active {
-  border-color: #ba7b60;
-  box-shadow: 0 16px 32px rgba(120, 70, 45, 0.26);
-  --active-raise: -9px;
-  --active-scale: 0.025;
   opacity: 1;
-  z-index: 2;
+  transform: scale(1.06);
+  border-color: #a84f2a;
+  background: #fff6f1;
+  box-shadow: 0 16px 30px rgba(138, 73, 39, 0.29);
 }
 
 .polaroid-card img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   background: #ffffff;
   display: block;
-  border-radius: 10px;
+  border-radius: 8px;
   pointer-events: none;
-  transition: transform 0.34s ease, filter 0.34s ease;
+  transition: filter 0.24s ease, opacity 0.24s ease;
+}
+
+.polaroid-card:not(.is-active) img {
+  filter: saturate(0.85);
+  opacity: 0.8;
 }
 
 .polaroid-card.is-active img {
-  transform: scale(1.005);
-  filter: saturate(1.02);
+  filter: saturate(1.05);
+  opacity: 1;
 }
 
 .polaroid-card span {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 2.8em;
-  margin-top: 10px;
+  height: 2.45em;
+  margin-top: 6px;
   font-family: "Josefin Sans", sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.94rem;
   line-height: 1.2;
   font-weight: 700;
   color: #272727;
@@ -659,10 +674,10 @@ a {
 }
 
 .church-showcase-content {
-  order: 1;
-  max-width: 760px;
-  padding: 16px 0 34px;
-  min-height: 340px;
+  order: 2;
+  max-width: 640px;
+  padding: 12px 0 16px;
+  min-height: 0;
 }
 
 .church-showcase-content h2 {
@@ -786,6 +801,26 @@ a {
     min-height: auto;
   }
 
+  .church-gallery-wrap {
+    order: 2;
+    width: 100%;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
+  }
+
+  .church-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .church-showcase-content {
+    order: 1;
+    max-width: 760px;
+    padding: 16px 0 22px;
+  }
+
   .polaroid-card {
     flex-basis: min(84vw, 300px);
   }
@@ -893,13 +928,13 @@ a {
   }
 
   .church-gallery {
-    padding: 14px 13vw 22px;
-    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .church-gallery-wrap {
-    padding-top: 28px;
-    padding-bottom: 28px;
+    padding-top: 8px;
+    padding-bottom: 12px;
     height: auto;
     min-height: 0;
     overflow-y: visible;
@@ -942,12 +977,12 @@ a {
   }
 
   .polaroid-card {
-    flex-basis: 78vw;
-    padding: 8px 8px 12px;
+    padding: 6px 6px 8px;
   }
 
   .polaroid-card span {
-    height: 3.1em;
+    height: 2.6em;
+    font-size: 0.88rem;
   }
 
   .social-video-card video {
