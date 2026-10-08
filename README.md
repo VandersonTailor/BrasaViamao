@@ -1,78 +1,40 @@
-# Brasa Viamão
+# Brasa Viamão: church website
 
-Site institucional da Igreja Brasa Viamão, migrado para Angular (standalone app).
+Institutional website for Igreja Brasa Viamão (Brazil), rebuilt as an Angular standalone application.
 
-## Visão geral
+**Live site:** https://brasaviamao.vercel.app
 
-- Landing page com hero em vídeo
-- Seções de igreja, ação social, cultos, ministérios e contato
-- Galeria interativa com cards e animações de entrada
-- Rolagem suave entre âncoras
-- Build de produção com Angular CLI
+## Features
 
-## Estrutura do projeto
+- Landing page with a video hero
+- Sections for the church, social projects, services, ministries and contact
+- Interactive gallery with cards and entrance animations
+- Smooth scrolling between sections
+- Single-page app deployed on Vercel
 
-```text
-.
-|-- src/
-|   |-- app/
-|   |   |-- app.component.html
-|   |   `-- app.component.ts
-|   |-- index.html
-|   |-- main.ts
-|   `-- styles.css
-|-- assets/
-|   |-- fotos/
-|   `-- videos/
-|-- angular.json
-|-- package.json
-|-- tsconfig.app.json
-|-- tsconfig.json
-`-- vercel.json
-```
+## Tech stack
 
-## Como executar localmente
+- Angular (standalone components), TypeScript
+- HTML and CSS
+- Vercel (SPA fallback configured in `vercel.json`)
 
-```powershell
+## Running locally
+
+```bash
 npm install
 npm start
 ```
 
-A aplicação sobe em `http://localhost:4200`.
+The app runs on `http://localhost:4200`.
 
-## Build de produção
+## Production build
 
-```powershell
+```bash
 npm run build
 ```
 
-Saída em `dist/brasa-viamao/browser`.
+The output goes to `dist/brasa-viamao/browser`.
 
-## Deploy
+## Note
 
-### Vercel
-
-O arquivo `vercel.json` mantém fallback para SPA.
-
-Passos:
-
-1. Conectar o repositório no painel da Vercel.
-2. Framework preset: `Angular` (ou `Other` manual).
-3. Build command: `npm run build`.
-4. Output directory: `dist/brasa-viamao/browser`.
-5. Deploy.
-
-### GitHub
-
-Fluxo básico:
-
-```powershell
-git add .
-git commit -m "chore: update website"
-git push origin main
-```
-
-## Observações
-
-- Existem arquivos de vídeo grandes em `assets/videos`.
-- O GitHub aceita até 100 MB por arquivo, mas recomenda usar Git LFS para arquivos acima de 50 MB.
+The repository contains large video files in `src/assets/videos`. The site content is in Portuguese.
